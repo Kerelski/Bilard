@@ -14,5 +14,10 @@ namespace bilard
         {
             return (int) (a + b);
         }
+
+        public int odejmowanie(int a, int b)
+        {
+            return a - b;
+        }
     }
 }
