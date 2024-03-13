@@ -1,12 +1,14 @@
 ﻿using System;
 
-namespace HelloWorld
+namespace bilard;
+
+class Program
 {
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
+        var kalkulator = new Kalkulator();
+
+        Console.WriteLine(kalkulator.suma(1,2));
     }
+
 }
