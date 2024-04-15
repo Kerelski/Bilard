@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,17 +9,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace View
+namespace View0
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class MainWindow : Window
     {
-        public UserControl1()
+        public MainWindow()
         {
             InitializeComponent();
         }
     }
-
 }

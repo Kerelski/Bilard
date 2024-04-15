@@ -9,29 +9,33 @@ namespace Data
 {
     public class Board
     {
-        private double _length;
-        private double _width;
+        private int _length;
+        private int _width;
         private List<Bill> _repository;
 
-        public Board(double length, double width)
+        public Board(int length, int width)
         {
             this._length = length;
             this._width = width;
             _repository = new List<Bill>();
         }
 
-        public double getLength() {  return _length; }
-        public double getWidth() { return _width; }
+        public int getLength() {  return _length; }
+        public int getWidth() { return _width; }
 
         public List<Bill> getRepository() { return _repository;}
 
         public void addBill(Bill bill) { _repository.Add(bill); }
 
-        public void removeBill(Bill bill) { _repository.Remove(bill); }
+        public void removeBill(Bill bill) {
+            if (bill == null) throw new NullReferenceException();
 
-        public void setLength(double length) { _length = length; }
+            _repository.Remove(bill); 
+        }
 
-        public void setWidth(double width) { _width = width; }
+        public void setLength(int length) { _length = length; }
+
+        public void setWidth(int width) { _width = width; }
 
         
     }
