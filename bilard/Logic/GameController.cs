@@ -18,18 +18,18 @@ namespace Logic
 
             int id = _board.getRepository().Count();
             int width = _board.Width;
-            int lenght = _board.Width;
+            int lenght = _board.Length;
 
             var rand = new Random();
 
-            int radius = rand.Next(15, 30);
+            int radius = rand.Next(25, 75);
 
             _board.addBill(new Bill(
                 id,
                 1,
                 radius,
-                rand.Next(0 + radius, width - radius),
-                rand.Next(0 + radius, lenght - radius),
+                rand.Next(0, width-radius*2),
+                rand.Next(0, lenght - radius*2),
                 rand.NextDouble() * 2 * Math.PI
                 )) ; 
         }
@@ -43,21 +43,33 @@ namespace Logic
         public void UpdatePosition()
         {
             double width = _board.Width;
-            double length = _board.Width;
+            double length = _board.Length;
 
             foreach (Bill bill in _board.getRepository())
+
             {
                 // Aktualizacja pozycji kulki
-                double newX = bill.X + 1 * Math.Cos(bill.Angle);
-                double newY = bill.Y + 1 * Math.Sin(bill.Angle);
+                double newX = bill.X + 3 * Math.Cos(bill.Angle);
+                double newY = bill.Y + 3 * Math.Sin(bill.Angle);
                 int radius = bill.Radius;
-                // Sprawdzenie czy kulka uderzyła w ścianę
-                if (newX < 0 + radius || newX > width - radius || newY < 0 + radius || newY > length - radius)
+
+                // Sprawdzenie czy kulka uderzyła w ścianę górną, dolną lub boczną
+                if (newX < 0 || newX > width - radius || newY < 0 || newY > length - radius)
                 {
                     // Odbicie kulki od ściany
                     double angle = bill.Angle;
-                    double reflectionAngle = Math.Atan2(-Math.Sin(angle), Math.Cos(angle));
-                    bill.Angle = reflectionAngle;
+
+                    // Odbicie od bocznych ścian
+                    if (newX < 0 || newX > width - radius)
+                    {
+                        angle = Math.PI - angle; // Odbicie kąta
+                    }
+                    else
+                    {
+                        angle = -angle; // Odbicie od górnej lub dolnej ściany
+                    }
+
+                    bill.Angle = angle;
                 }
                 else
                 {
@@ -74,9 +86,13 @@ namespace Logic
         }
 
         public int GetSize() => _board.getSize();
-        
+
+        public int GetLength() => _board.Length;
+
+        public int GetWidth() => _board.Width;
         public List<Bill> GetBillList() => _board.getRepository();
         
+
 
     }
 }

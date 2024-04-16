@@ -34,6 +34,12 @@ namespace Model
         }
 
         public List<Bill> GetBills() => _controller.GetBillList();
+
+        public int GetLength() => _controller.GetLength();
+
+        public int GetWidth() => _controller.GetWidth();
+
+        public int GetSize() => _controller.GetSize();
     }
 
 }

@@ -49,37 +49,75 @@ namespace ViewModel
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(10);
             _timer.Tick += _timer_Tick;
+            
         }
 
         private void _timer_Tick(object sender, EventArgs e)
         {
             _GameModel.UpdatePosition();
+           
             OnPropertyChanged("Bills");
         }
 
         public void Add()
         {
-            _isDeleteEnable = true;
-            _isClearEnable = true;
+            IsDeleteEnable = true;
+            IsClearEnable = true;
             _GameModel.AddBill();
             _timer.Start();
         }
 
         public void Delete()
         {
-            _GameModel.DeleteBill();
+            if (_GameModel.GetSize() > 1)
+            {
+                _GameModel.DeleteBill();
+            }
+            else if(_GameModel.GetSize() == 1)
+            {
+                IsClearEnable = false;
+                IsDeleteEnable = false;
+                _GameModel.DeleteBill();
+                
+            }
+            else
+            {
+        
+                return;
+            }
             OnPropertyChanged("Bills");
         }
 
         public void ClearAll()
         {
-            _GameModel.ClearBoard();
+            if (_GameModel.GetSize() > 0) 
+            {
+                _GameModel.ClearBoard();
+                IsClearEnable = false;
+                IsDeleteEnable = false;
+            }
+            else
+            {
+                
+                return;
+            };
+            
             OnPropertyChanged("Bills");
         }
 
         public Bill[]? Bills
         {
             get => _GameModel.GetBills().ToArray();
+        }
+
+        public int GetBoardLength
+        {
+            get => _GameModel.GetLength();
+        }
+
+        public int GetBoardWidth
+        {
+            get => _GameModel.GetWidth();
         }
 
         public bool IsAddEnable

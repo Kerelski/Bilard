@@ -1,4 +1,6 @@
-﻿namespace Data
+﻿using System.Runtime.CompilerServices;
+
+namespace Data
 {
     public class Bill
     {
@@ -8,6 +10,7 @@
         private double _x;
         private double _y;
         private double _angle; //od 0 do 6.28 (2*pi)
+        private int[] _color;
 
         public Bill(int id, double wieght, int radius, double _x, double _y, double angle)
         {
@@ -17,6 +20,12 @@
             this._x = _x; 
             this._y = _y;
             this._angle = angle;
+            this._color = new int[3];
+            var rand = new Random();
+            for (int i = 0; i < 3; i++)
+            {
+                _color[i] = rand.Next(0, 255);
+            }
         }
         public int Id
         {
@@ -24,6 +33,14 @@
             set => _id = value;
         }
 
+        public string Color
+        {
+            get
+            {
+                string colorHex = $"#{_color[0].ToString("X2")}{_color[1].ToString("X2")}{_color[2].ToString("X2")}";
+                return colorHex;
+            }
+        }
         public double Weight
         {
             get => _weight; 
