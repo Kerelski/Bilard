@@ -20,8 +20,18 @@ namespace Data
             _repository = new List<Bill>();
         }
 
-        public int getLength() {  return _length; }
-        public int getWidth() { return _width; }
+        public int Length
+        {
+            get => _length;
+            set => _length = value;
+        }
+
+        public int Width
+        {
+            get => this._width;
+            set => this._width = value;
+        }
+       
 
         public List<Bill> getRepository() { return _repository;}
 
@@ -33,10 +43,7 @@ namespace Data
             _repository.Remove(bill); 
         }
 
-        public void setLength(int length) { _length = length; }
-
-        public void setWidth(int width) { _width = width; }
-
+        public int getSize() {  return _repository.Count(); }
         
     }
 }

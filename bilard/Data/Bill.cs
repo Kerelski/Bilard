@@ -18,17 +18,44 @@
             this._y = _y;
             this._angle = angle;
         }
-        public int getId() { return _id; }
-        public double getWeight() {  return _weight; }
-        public int getRadius() { return _radius; }
-        public double getX() { return _x; }
-        public double getY() { return _y;}
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
 
-        public double getAngle() { return _angle;}
+        public double Weight
+        {
+            get => _weight; 
+            set => _weight = value;
+        }
+        
+        public int Radius
+        {
+            get => this._radius;
+            set => this._radius = value;
 
-        public void setX(double x) { _x = x; }
-        public void setY(double y) { _y = y; }
-        public void setAngle(double angle) { _angle = angle; }
+        }
+        
+        public double X
+        {
+            get => (double)_x;
+            set => _x = value;
+
+        }
+
+        public double Y
+        {
+            get => (double)_y;
+            set => _y = value;
+        }
+        
+        public double Angle
+        {
+            get => _angle;
+            set => _angle = value;
+        }
+
 
     }
 }

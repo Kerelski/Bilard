@@ -5,19 +5,26 @@ using System.Numerics;
 
 namespace Logic
 {
-    static class GameController
+    public class GameController
     {
-        public static void createBill(Board board) {
+        private Board _board;
 
-            int id = board.getRepository().Count();
-            int width = board.getWidth();
-            int lenght = board.getLength();
+        public GameController(int x, int y)
+        {
+            this._board = new Board(x, y);
+        }
+
+        public void CreateBill() {
+
+            int id = _board.getRepository().Count();
+            int width = _board.Width;
+            int lenght = _board.Width;
 
             var rand = new Random();
 
             int radius = rand.Next(15, 30);
 
-            board.addBill(new Bill(
+            _board.addBill(new Bill(
                 id,
                 1,
                 radius,
@@ -26,39 +33,50 @@ namespace Logic
                 rand.NextDouble() * 2 * Math.PI
                 )) ; 
         }
-        public static void deleteBill(Board board, int id)
+        public void DeleteBill(int id)
         {
-            Bill bill = board.getRepository().Find(e => e.getId() == id);
+            Bill bill = _board.getRepository().Find(e => e.Id == id);
 
-            board.removeBill(bill);
+            _board.removeBill(bill);
         }
 
-        public static void updatePosition(Board board)
+        public void UpdatePosition()
         {
-            double width = board.getWidth();
-            double length = board.getLength();
+            double width = _board.Width;
+            double length = _board.Width;
 
-            foreach (Bill bill in board.getRepository())
+            foreach (Bill bill in _board.getRepository())
             {
                 // Aktualizacja pozycji kulki
-                double newX = bill.getX() + 1 * Math.Cos(bill.getAngle());
-                double newY = bill.getY() + 1 * Math.Sin(bill.getAngle());
-                int radius = bill.getRadius();
+                double newX = bill.X + 1 * Math.Cos(bill.Angle);
+                double newY = bill.Y + 1 * Math.Sin(bill.Angle);
+                int radius = bill.Radius;
                 // Sprawdzenie czy kulka uderzyła w ścianę
                 if (newX < 0 + radius || newX > width - radius || newY < 0 + radius || newY > length - radius)
                 {
                     // Odbicie kulki od ściany
-                    double angle = bill.getAngle();
+                    double angle = bill.Angle;
                     double reflectionAngle = Math.Atan2(-Math.Sin(angle), Math.Cos(angle));
-                    bill.setAngle(reflectionAngle);
+                    bill.Angle = reflectionAngle;
                 }
                 else
                 {
                     // Aktualizacja pozycji kulki
-                    bill.setX(newX);
-                    bill.setY(newY);
+                    bill.X = newX;
+                    bill.Y = newY;
                 }
             }
         }
+
+        public void ClearBoard()
+        {
+            _board.getRepository().Clear();
+        }
+
+        public int GetSize() => _board.getSize();
+        
+        public List<Bill> GetBillList() => _board.getRepository();
+        
+
     }
 }
