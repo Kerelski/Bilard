@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data
 {
-    public class Board
+    public class Board: IBoard
     {
         private int _length;
         private int _width;
@@ -31,7 +31,6 @@ namespace Data
             get => this._width;
             set => this._width = value;
         }
-       
 
         public List<Bill> getRepository() { return _repository;}
 

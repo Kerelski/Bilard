@@ -2,7 +2,7 @@
 
 namespace Data
 {
-    public class Bill
+    public class Bill : IBill
     {
         private int _id;
         private double _weight;
@@ -50,7 +50,11 @@ namespace Data
         public int Radius
         {
             get => this._radius;
-            set => this._radius = value;
+            set 
+            {
+                if (value < 0) throw new InvalidDataException();
+                this._radius = value;
+            } 
 
         }
         
@@ -72,7 +76,5 @@ namespace Data
             get => _angle;
             set => _angle = value;
         }
-
-
     }
 }

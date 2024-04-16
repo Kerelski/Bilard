@@ -28,7 +28,7 @@ namespace Logic
                 id,
                 1,
                 radius,
-                rand.Next(0, width-radius*2),
+                rand.Next(0, width - radius*2),
                 rand.Next(0, lenght - radius*2),
                 rand.NextDouble() * 2 * Math.PI
                 )) ; 
@@ -92,7 +92,5 @@ namespace Logic
         public int GetWidth() => _board.Width;
         public List<Bill> GetBillList() => _board.getRepository();
         
-
-
     }
 }
