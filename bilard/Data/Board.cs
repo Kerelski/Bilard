@@ -34,6 +34,11 @@ namespace Data
 
         public List<Bill> getRepository() { return _repository;}
 
+        public void setRepository(List<Bill> repo)
+        {
+            _repository = repo;
+        }
+
         public void addBill(Bill bill) { _repository.Add(bill); }
 
         public void removeBill(Bill bill) {

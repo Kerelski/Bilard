@@ -7,7 +7,7 @@ namespace Data
     {
         private int _id;
         private double _weight;
-        private int _diameter;
+        private double _diameter;
         private double _x;
         private double _y;
         private double _speed;
@@ -50,7 +50,7 @@ namespace Data
             set => _weight = value;
         }
         
-        public int Diameter
+        public double Diameter
         {
             get => this._diameter;
             set 
