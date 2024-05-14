@@ -11,10 +11,13 @@
             <RowDefinition Height="636"/>
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="310" >
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="500
+                    " >
             <Button Content="Dodaj bilę" Width="75" Height="40" Margin="0,0,20,0" Command="{Binding _add}" IsEnabled="{Binding IsAddEnable}" RenderTransformOrigin="0.467,-0.162" FontWeight="Bold" Background="#FF0E46F1" Foreground="White"/>
             <Button Content="Usuń bilę" Width="75" Height="40" Margin="0,0,20,0" Command="{Binding _delete}" IsEnabled="{Binding IsDeleteEnable}" Background="#FF0E46F1" FontWeight="Bold" Foreground="White"/>
             <Button Content="Usuń wszystkie" Width="100" Height="40" Margin="0,0,20,0" Command="{Binding _clear}" IsEnabled="{Binding IsClearEnable}" Background="#FF0E46F1" FontWeight="Bold" Foreground="White"/>
+            <Button Content="Wygeneruj" Width="100" Height="40" Margin="0,0,20,0" Command="{Binding _generate}" IsEnabled="{Binding IsGenerateEnable}" Background="#FF0E46F1" FontWeight="Bold" Foreground="White"/>
+            <TextBox x:Name="numberOfBills" Width="36" RenderTransformOrigin="-0.289,0.576"/>
         </StackPanel>
         <Canvas Grid.Row="0" Width="{Binding GetBoardWidth}" Height="{Binding GetBoardLength}" Background="LightGreen" HorizontalAlignment="Center" Margin="0,23,0,0" >
             <ItemsControl ItemsSource="{Binding Bills}">
@@ -31,12 +34,12 @@
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Ellipse   Width="{Binding Radius}" Height="{Binding Radius}">
+                        <Ellipse   Width="{Binding Diameter}" Height="{Binding Diameter}">
                             <Ellipse.Fill>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="{Binding Color}" Offset="0" />
-                                    <GradientStop Color="White" Offset="1" />
-                                </LinearGradientBrush>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="{Binding Color}" Offset="1" />
+                                    <GradientStop Color="White" Offset="0" />
+                                </RadialGradientBrush>
                             </Ellipse.Fill>
                         </Ellipse>
                     </DataTemplate>

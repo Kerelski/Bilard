@@ -6,21 +6,23 @@ namespace Data
     {
         private int _id;
         private double _weight;
-        private int _radius;
+        private int _diameter;
         private double _x;
         private double _y;
+        private double _speed;
         private double _angle; //od 0 do 6.28 (2*pi)
         private int[] _color;
 
-        public Bill(int id, double wieght, int radius, double _x, double _y, double angle)
+        public Bill(int id, double weight, int diameter, double x, double y, double angle, double speed)
         {
             this._id = id;
-            this._radius = radius;
-            this._weight = wieght;
-            this._x = _x; 
-            this._y = _y;
+            this._diameter = diameter;
+            this._weight = weight;
+            this._x = x; 
+            this._y = y;
             this._angle = angle;
             this._color = new int[3];
+            this._speed = speed;
             var rand = new Random();
             for (int i = 0; i < 3; i++)
             {
@@ -47,15 +49,21 @@ namespace Data
             set => _weight = value;
         }
         
-        public int Radius
+        public int Diameter
         {
-            get => this._radius;
+            get => this._diameter;
             set 
             {
                 if (value < 0) throw new InvalidDataException();
-                this._radius = value;
+                this._diameter = value;
             } 
 
+        }
+
+        public double Speed
+        {
+            get => _speed;
+            set => _speed = value;
         }
         
         public double X
@@ -75,6 +83,14 @@ namespace Data
         {
             get => _angle;
             set => _angle = value;
+        }
+
+        public bool IsColliding(Bill other)
+        {
+            double dx = this.X - other.X;
+            double dy = this.Y - other.Y;
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            return distance < (this.Diameter/2 + other.Diameter/2);
         }
     }
 }

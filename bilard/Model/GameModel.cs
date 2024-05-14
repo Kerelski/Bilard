@@ -18,6 +18,11 @@ namespace Model
             _controller.CreateBill();
         }
 
+        public void CreateFewBills(int numberOfBills)
+        {
+            _controller.CreateNumberOfBills(numberOfBills);
+        }
+
         public void DeleteBill()
         {
             _controller.DeleteBill(_controller.GetSize()-1);
@@ -26,6 +31,10 @@ namespace Model
         public void UpdatePosition()
         {
             _controller.UpdatePosition();
+        }
+
+        public void BounceBills() {
+            _controller.BounceBills();
         }
 
         public void ClearBoard()

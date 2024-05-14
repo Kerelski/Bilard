@@ -13,6 +13,7 @@ using Data;
 using System.Windows.Threading;
 using Model;
 using System.Collections;
+using System.Windows.Controls;
 
 namespace ViewModel
 {
@@ -29,6 +30,9 @@ namespace ViewModel
         public ICommand _add { get; }
         public ICommand _delete { get; }
         public ICommand _clear { get; }
+        public ICommand _generate { get; }
+
+
         private GameModel _GameModel;
         private DispatcherTimer _timer;
         private int _length = 600;
@@ -36,28 +40,58 @@ namespace ViewModel
         private bool _isAddEnable;
         private bool _isDeleteEnable;
         private bool _isClearEnable;
+        private bool _isGenerateEnable;
+        private TextBox _textBox;
+        private int _numberOfBills;
 
         public GUIController()
         {
             _add = new RelayCommand(Add);
             _delete = new RelayCommand(Delete);
             _clear = new RelayCommand(ClearAll);
+            _generate = new RelayCommand(Generate);
+
+            //_textBox = numberOfBills;
             _GameModel = new GameModel(_length, _width);
             _isAddEnable = true;
             _isDeleteEnable = false;
             _isClearEnable = false;
+            _isGenerateEnable = false;
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(10);
             _timer.Tick += _timer_Tick;
             
         }
 
+        public void Generate()
+        {
+            IsDeleteEnable = true;
+            IsClearEnable = true;
+           // _GameModel.CreateFewBills(numberOfBills);
+            _timer.Start();
+        }
+
         private void _timer_Tick(object sender, EventArgs e)
         {
+           
+            _GameModel.BounceBills();
             _GameModel.UpdatePosition();
            
             OnPropertyChanged("Bills");
         }
+
+       /* private void numberOfBills_TextChanged(object sencder, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(_textBox.Text))
+            {
+                IsGenerateEnable = true;
+                _numberOfBills = int.Parse(_textBox.Text);
+            }
+            else
+            {          
+                IsGenerateEnable = false;
+            }
+        }*/
 
         public void Add()
         {
@@ -138,6 +172,15 @@ namespace ViewModel
                 OnPropertyChanged();
             }
 
+        }
+        public bool IsGenerateEnable
+        {
+            get => _isGenerateEnable;
+            set
+            {
+                _isGenerateEnable = value;
+                OnPropertyChanged();
+            }
         }
 
         public bool IsClearEnable

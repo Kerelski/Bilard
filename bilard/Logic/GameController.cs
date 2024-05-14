@@ -1,6 +1,7 @@
 ﻿using Data;
 using System;
 using System.Numerics;
+using System.Threading;
 
 
 namespace Logic
@@ -8,12 +9,20 @@ namespace Logic
     public class GameController
     {
         private Board _board;
+        private object _lock = new object();
 
         public GameController(int x, int y)
         {
             this._board = new Board(x, y);
         }
 
+        public void CreateNumberOfBills(int numberOfBills)
+        {
+            Parallel.For(0, numberOfBills, i =>
+            {
+                CreateBill();
+            });
+        }
         public void CreateBill() {
 
             int id = _board.getRepository().Count();
@@ -22,15 +31,16 @@ namespace Logic
 
             var rand = new Random();
 
-            int radius = rand.Next(25, 75);
+            int diameter = rand.Next(25, 75);
 
             _board.addBill(new Bill(
                 id,
-                1,
-                radius,
-                rand.Next(0, width - radius*2),
-                rand.Next(0, lenght - radius*2),
-                rand.NextDouble() * 2 * Math.PI
+                diameter/10,
+                diameter,
+                rand.Next(0, width - diameter*2),
+                rand.Next(0, lenght - diameter*2),
+                rand.NextDouble() * 2 * Math.PI,
+                rand.Next(1, 5)
                 )) ; 
         }
         public void DeleteBill(int id)
@@ -39,44 +49,78 @@ namespace Logic
 
             _board.removeBill(bill);
         }
+         public void BounceBills()
+         {
+             List<Bill> Bills = _board.getRepository();
+             for (int i = 0; i < Bills.Count; i++)
+             {
+                 for (int j = i + 1; j < Bills.Count; j++)
+                 {
+                     if (Bills[i].IsColliding(Bills[j]))
+                     {
 
+                         // Obliczamy nowy kąt po zderzeniu
+                         double angle = Math.Atan2((Bills[j].Y) - Bills[i].Y, Bills[j].X - Bills[i].X);
+                         Bills[i].Angle = 2 * angle - Bills[i].Angle;
+                         Bills[j].Angle = 2 * angle - Bills[j].Angle;
+                        double tempSpeed = Bills[i].Speed;
+
+                         Bills[i].Speed = ((Bills[i].Weight - Bills[j].Weight) * Bills[i].Speed + 2 * Bills[j].Weight * Bills[j].Speed) / (Bills[i].Weight + Bills[j].Weight);
+                         Bills[j].Speed = ((Bills[j].Weight - Bills[i].Weight) * Bills[j].Speed + 2 * Bills[i].Weight * tempSpeed) / (Bills[i].Weight + Bills[j].Weight);
+                     }
+                 }
+             }
+         }
+
+        private bool IsColliding(Bill bill1, Bill bill2)
+        {
+            double dx = bill1.X - bill2.X;
+            double dy = bill1.Y - bill2.Y;
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            return distance < (bill1.Diameter / 2 + bill2.Diameter / 2);
+        }
         public void UpdatePosition()
         {
             double width = _board.Width;
             double length = _board.Length;
+       
+                    //odbicia od scian
+                    foreach (Bill bill in _board.getRepository())
 
-            foreach (Bill bill in _board.getRepository())
-
-            {
-                // Aktualizacja pozycji kulki
-                double newX = bill.X + 3 * Math.Cos(bill.Angle);
-                double newY = bill.Y + 3 * Math.Sin(bill.Angle);
-                int radius = bill.Radius;
-
-                // Sprawdzenie czy kulka uderzyła w ścianę górną, dolną lub boczną
-                if (newX < 0 || newX > width - radius || newY < 0 || newY > length - radius)
-                {
-                    // Odbicie kulki od ściany
-                    double angle = bill.Angle;
-
-                    // Odbicie od bocznych ścian
-                    if (newX < 0 || newX > width - radius)
                     {
-                        angle = Math.PI - angle; // Odbicie kąta
-                    }
-                    else
-                    {
-                        angle = -angle; // Odbicie od górnej lub dolnej ściany
-                    }
+                        // Aktualizacja pozycji kulki
+                        double newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
+                        double newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
+                        int diameter = bill.Diameter;
+        
 
-                    bill.Angle = angle;
-                }
-                else
-                {
-                    // Aktualizacja pozycji kulki
-                    bill.X = newX;
-                    bill.Y = newY;
-                }
+                    // Sprawdzenie czy kulka uderzyła w ścianę górną, dolną lub boczną
+                    if (newX < 0 || newX > width - diameter || newY < 0 || newY > length - diameter)
+                        {
+                            // Odbicie kulki od ściany
+                            double angle = bill.Angle;
+
+                            // Odbicie od bocznych ścian
+                            if (newX < 0 || newX > width - diameter)
+                            {
+                                angle = Math.PI - angle; // Odbicie kąta
+                            }
+                            else
+                            {
+                                angle = -angle; // Odbicie od górnej lub dolnej ściany
+                            }
+
+                            bill.Angle = angle;
+                        }
+                        else
+                        {
+                            // Aktualizacja pozycji kulki
+                            bill.X = newX;
+                            bill.Y = newY;
+                        }
+
+
+                  
             }
         }
 
