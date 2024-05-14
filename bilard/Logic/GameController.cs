@@ -23,57 +23,54 @@ namespace Logic
             });
         }
         public void CreateBill() {
+            lock (_board)
+            {
+                int id = _board.getRepository().Count();
+                int width = _board.Width;
+                int lenght = _board.Length;
 
-            int id = _board.getRepository().Count();
-            int width = _board.Width;
-            int lenght = _board.Length;
+                var rand = new Random();
 
-            var rand = new Random();
+                int diameter = rand.Next(25, 75);
 
-            int diameter = rand.Next(25, 75);
+                Bill bill = new Bill(
+                    id,
+                    diameter / 10,
+                    diameter,
+                    rand.Next(0, width-diameter),
+                    rand.Next(0, lenght-diameter),
+                    rand.NextDouble() * 2 * Math.PI,
+                    rand.Next(1, 5)
 
-            _board.addBill(new Bill(
-                id,
-                diameter/10,
-                diameter,
-                rand.Next(0, width - diameter*2),
-                rand.Next(0, lenght - diameter*2),
-                rand.NextDouble() * 2 * Math.PI,
-                //rand.Next(1, 5)
-                1
-                )) ; 
+                    );
+                bool flag = false;
+                do
+                {
+                    flag = false;
+                    foreach (Bill secBill in _board.getRepository())
+                    {
+                        if (IsColliding(bill, secBill))
+                        {
+                            flag = true;
+                            bill.X = rand.Next(0, width - diameter);
+                            bill.Y = rand.Next(0, lenght - diameter);
+                            break;
+
+                        }
+
+                    }
+                     
+                } while (flag);
+                _board.addBill(bill);
+            }
+            
         }
         public void DeleteBill(int id)
         {
             Bill bill = _board.getRepository().Find(e => e.Id == id);
 
             _board.removeBill(bill);
-        }
-         /*public void BounceBills()
-         {
-             List<Bill> Bills = _board.getRepository();
-             for (int i = 0; i < Bills.Count; i++)
-             {
-                 for (int j = i + 1; j < Bills.Count; j++)
-                 {
-                     if (IsColliding(Bills[i], Bills[j]))
-                     {
-                        lock (_board)
-                        { 
-                             // Obliczamy nowy kąt po zderzeniu
-                             double angle = Math.Atan2(Bills[j].Y - Bills[i].Y, Bills[j].X - Bills[i].X);
-                             Bills[i].Angle = 2 * angle - Bills[i].Angle;
-                             Bills[j].Angle = 2 * angle - Bills[j].Angle;
-                             double tempSpeed = Bills[i].Speed;
-
-                             Bills[i].Speed = ((Bills[i].Weight - Bills[j].Weight) * Bills[i].Speed + 2 * Bills[j].Weight * Bills[j].Speed) / (Bills[i].Weight + Bills[j].Weight);
-                             Bills[j].Speed = ((Bills[j].Weight - Bills[i].Weight) * Bills[j].Speed + 2 * Bills[i].Weight * tempSpeed) / (Bills[i].Weight + Bills[j].Weight);
-                     
-                        }
-                     }
-                 }
-             }
-         }*/
+        } 
 
         private bool IsColliding(Bill bill1, Bill bill2)
         {
@@ -94,26 +91,6 @@ namespace Logic
         {
             double width = _board.Width;
             double length = _board.Length;
-            List<Bill> Bills = _board.getRepository();
-            Parallel.For(0, Bills.Count, i =>
-            {
-                if (Bills[i] == bill) return; // Pominięcie bieżącej kulki
-
-                if (IsColliding(Bills[i], bill))
-                {
-                    lock (_board)
-                    {
-                        double angle = Math.Atan2(bill.Y - Bills[i].Y, bill.X - Bills[i].X);
-                        Bills[i].Angle = 2 * angle - Bills[i].Angle;
-                        bill.Angle = 2 * angle - bill.Angle;                  
-
-                        double tempSpeed = Bills[i].Speed;
-
-                        Bills[i].Speed = ((Bills[i].Weight - bill.Weight) * Bills[i].Speed + 2 * bill.Weight * bill.Speed) / (Bills[i].Weight + bill.Weight);
-                        bill.Speed = ((bill.Weight - Bills[i].Weight) * bill.Speed + 2 * Bills[i].Weight * tempSpeed) / (Bills[i].Weight + bill.Weight);                        _board.setRepository(Bills);
-                    }
-                }
-            });
             //odbicia od scian
             // Aktualizacja pozycji kulki
             double newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
@@ -137,18 +114,41 @@ namespace Logic
                     angle = -angle; // Odbicie od górnej lub dolnej ściany
                 }
 
-                        bill.Angle = angle;
+                bill.Angle = angle;
                 newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
                 newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
 
             }
             
+            double oldX = bill.X;
+            double oldY = bill.Y;
 
             // Aktualizacja pozycji kulki
             bill.X = newX;
             bill.Y = newY;
-            
-                
+
+            foreach (Bill secBill in _board.getRepository())
+            {
+                if (bill == secBill) continue;
+                else
+                {
+                    if(IsColliding(bill, secBill))
+                    lock (_board)
+                    {
+                        double angle = Math.Atan2(secBill.Y - bill.Y, secBill.X - bill.X);
+                        secBill.Angle = 2 * angle - secBill.Angle;
+                        bill.Angle = 2 * angle - bill.Angle;
+
+                        double tempSpeed = bill.Speed;
+
+                        secBill.Speed = ((secBill.Weight - bill.Weight) * secBill.Speed + 2 * bill.Weight * bill.Speed) / (secBill.Weight + bill.Weight);
+                        bill.Speed = ((bill.Weight - secBill.Weight) * bill.Speed + 2 * secBill.Weight * tempSpeed) / (secBill.Weight + bill.Weight);
+                        bill.X += bill.X - secBill.X;
+                        bill.Y += bill.Y - secBill.Y; 
+                        
+                    }
+                }
+            }
         }
 
         public void ClearBoard()
