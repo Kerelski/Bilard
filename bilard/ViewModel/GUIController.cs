@@ -74,8 +74,8 @@ namespace ViewModel
         private void _timer_Tick(object sender, EventArgs e)
         {
            
-            _GameModel.BounceBills();
-            _GameModel.UpdatePosition();
+  
+            _GameModel.StartSimulation();
            
             OnPropertyChanged("Bills");
         }

@@ -28,14 +28,11 @@ namespace Model
             _controller.DeleteBill(_controller.GetSize()-1);
         }
 
-        public void UpdatePosition()
+        public void StartSimulation()
         {
-            _controller.UpdatePosition();
+            _controller.StartSimulation();
         }
 
-        public void BounceBills() {
-            _controller.BounceBills();
-        }
 
         public void ClearBoard()
         {

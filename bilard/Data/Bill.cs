@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Data
 {
@@ -85,12 +86,6 @@ namespace Data
             set => _angle = value;
         }
 
-        public bool IsColliding(Bill other)
-        {
-            double dx = this.X - other.X;
-            double dy = this.Y - other.Y;
-            double distance = Math.Sqrt(dx * dx + dy * dy);
-            return distance < (this.Diameter/2 + other.Diameter/2);
-        }
+      
     }
 }
