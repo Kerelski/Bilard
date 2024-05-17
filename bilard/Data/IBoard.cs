@@ -6,9 +6,10 @@ namespace Data
     {
         int Length { get; set; }
         int Width { get; set; }
-        List<Bill> getRepository();
-        void addBill(Bill bill);
-        void removeBill(Bill bill);
+        List<IBill> getRepository();
+        void addBill(IBill bill);
+        void removeBill(IBill bill);
         int getSize();
+        void setRepository(List<IBill> repository);
     }
 }

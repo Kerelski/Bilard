@@ -18,28 +18,20 @@ namespace Model
             _controller.CreateBill();
         }
 
-        public void CreateFewBills(int numberOfBills)
-        {
-            _controller.CreateNumberOfBills(numberOfBills);
-        }
-
         public void DeleteBill()
         {
             _controller.DeleteBill(_controller.GetSize()-1);
         }
 
-        public void StartSimulation()
-        {
-            _controller.StartSimulation();
-        }
-
-
         public void ClearBoard()
         {
             _controller.ClearBoard();
         }
+        public GameController GetController {
+            get => _controller;
+        }
 
-        public List<Bill> GetBills() => _controller.GetBillList();
+        public List<IBill> GetBills() => _controller.GetBillList();
 
         public int GetLength() => _controller.GetLength();
 

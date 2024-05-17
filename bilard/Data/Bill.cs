@@ -13,6 +13,8 @@ namespace Data
         private double _speed;
         private double _angle; //od 0 do 6.28 (2*pi)
         private int[] _color;
+        public event NotifyDelegateBill.NotifyBill? OnChange;
+        private bool _isMoving = true;
 
         public Bill(int id, double weight, int diameter, double x, double y, double angle, double speed)
         {
@@ -86,6 +88,26 @@ namespace Data
             set => _angle = value;
         }
 
-      
+        public bool IsMoving
+        {
+            get=> _isMoving;
+            set => _isMoving = value;
+        }
+
+        public void MoveAsync(Barrier barrier)
+        {
+            barrier.AddParticipant();
+            Task.Run(() => Move(barrier));
+        }
+
+        private void Move(Barrier barrier)
+        {
+            while(IsMoving)
+            {
+                OnChange?.Invoke(this);
+                barrier.SignalAndWait();
+            }
+           barrier.RemoveParticipant();
+        }
     }
 }

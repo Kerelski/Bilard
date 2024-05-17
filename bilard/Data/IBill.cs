@@ -9,5 +9,11 @@
         double X { get; set; }
         double Y { get; set; }
         double Angle { get; set; }
+        double Speed { get; set; }
+
+        bool IsMoving { get; set; }
+
+        event NotifyDelegateBill.NotifyBill? OnChange;
+        void MoveAsync(Barrier barrier);
     }
 }

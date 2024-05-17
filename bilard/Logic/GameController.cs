@@ -6,22 +6,28 @@ using System.Threading;
 
 namespace Logic
 {
-    public class GameController
+    public class GameController : IGameController
     {
-        private Board _board;
+        private IBoard _board;
+        private readonly object _lock = new object();
+        public event NotifyDelegateGameController.NotifyBillController? OnChange;
+        private double _width;
+        private double _length;
+        Barrier barrier;
 
         public GameController(int x, int y)
         {
             this._board = new Board(x, y);
-        }
-
-        public void CreateNumberOfBills(int numberOfBills)
-        {
-            Parallel.For(0, numberOfBills, i =>
+            this._length = x;
+            this._width = y;
+            barrier = new Barrier(0, (b) =>
             {
-                CreateBill();
+                OnChange?.Invoke();
+                Thread.Sleep(10);
             });
         }
+
+   
         public void CreateBill() {
             lock (_board)
             {
@@ -33,12 +39,15 @@ namespace Logic
 
                 int diameter = rand.Next(25, 75);
 
+                double x = rand.Next(0, width - diameter);
+                double y = rand.Next(0, lenght - diameter);
+
                 Bill bill = new Bill(
                     id,
                     diameter / 10,
                     diameter,
-                    rand.Next(0, width-diameter),
-                    rand.Next(0, lenght-diameter),
+                    x,
+                    y,
                     rand.NextDouble() * 2 * Math.PI,
                     rand.Next(1, 5)
 
@@ -49,7 +58,7 @@ namespace Logic
                     flag = false;
                     foreach (Bill secBill in _board.getRepository())
                     {
-                        if (IsColliding(bill, secBill))
+                        if (IsColliding(x, y, diameter, secBill))
                         {
                             flag = true;
                             bill.X = rand.Next(0, width - diameter);
@@ -61,98 +70,115 @@ namespace Logic
                     }
                      
                 } while (flag);
+                bill.OnChange += UpdatePosition;
+                bill.MoveAsync(barrier);
                 _board.addBill(bill);
             }
             
         }
         public void DeleteBill(int id)
         {
-            Bill bill = _board.getRepository().Find(e => e.Id == id);
-
+            IBill bill = _board.getRepository().Find(e => e.Id == id);
+            bill.IsMoving = false;
+            bill.OnChange -= UpdatePosition;
             _board.removeBill(bill);
         } 
 
-        private bool IsColliding(Bill bill1, Bill bill2)
+        private bool IsColliding(double x,double y, double d, IBill bill2)
         {
-            double dx = bill1.X - bill2.X;
-            double dy = bill1.Y - bill2.Y;
+            double dx = bill2.X - x;
+            double dy = bill2.Y - y;
             double distance = Math.Sqrt(dx * dx + dy * dy);
-            return distance <= (bill1.Diameter / 2 + bill2.Diameter / 2);
+            return distance < (d / 2 + bill2.Diameter / 2);
         }
 
-        public void StartSimulation()
+        public void UpdatePosition(IBill bill)
         {
-            foreach (Bill bill in _board.getRepository())
+            lock (_lock)
             {
-                Task.Run(() => UpdatePosition(bill));
-            }
-        }
-        public void UpdatePosition(Bill bill)
-        {
-            double width = _board.Width;
-            double length = _board.Length;
-            //odbicia od scian
-            // Aktualizacja pozycji kulki
-            double newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
-            double newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
-            double diameter = bill.Diameter;
+                
+                
+                // Aktualizacja pozycji kulki
+                double newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
+                double newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
+                double diameter = bill.Diameter;
 
-                    // Sprawdzenie czy kulka uderzyła w ścianę górną, dolną lub boczną
-            if (newX < 0 || newX > width - diameter || newY < 0 || newY > length - diameter)
-            {
-                        // Odbicie kulki od ściany
-                double angle = bill.Angle;
-
-                        // Odbicie od bocznych ścian
-                if (newX < 0 || newX > width - diameter)
+                //sprawdzenie kolizji
+                foreach (IBill secBill in _board.getRepository())
                 {
-                    angle = Math.PI - angle; // Odbicie kąta
-
-                }
-                else
-                {
-                    angle = -angle; // Odbicie od górnej lub dolnej ściany
-                }
-
-                bill.Angle = angle;
-                newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
-                newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
-
-            }
-            
-            double oldX = bill.X;
-            double oldY = bill.Y;
-
-            // Aktualizacja pozycji kulki
-            bill.X = newX;
-            bill.Y = newY;
-
-            foreach (Bill secBill in _board.getRepository())
-            {
-                if (bill == secBill) continue;
-                else
-                {
-                    if(IsColliding(bill, secBill))
-                    lock (_board)
-                    {
-                        double angle = Math.Atan2(secBill.Y - bill.Y, secBill.X - bill.X);
-                        secBill.Angle = 2 * angle - secBill.Angle;
-                        bill.Angle = 2 * angle - bill.Angle;
-
-                        double tempSpeed = bill.Speed;
-
-                        secBill.Speed = ((secBill.Weight - bill.Weight) * secBill.Speed + 2 * bill.Weight * bill.Speed) / (secBill.Weight + bill.Weight);
-                        bill.Speed = ((bill.Weight - secBill.Weight) * bill.Speed + 2 * secBill.Weight * tempSpeed) / (secBill.Weight + bill.Weight);
-                        bill.X += bill.X - secBill.X;
-                        bill.Y += bill.Y - secBill.Y; 
+                    
+                        if (bill.Id != secBill.Id && IsColliding(newX, newY, diameter, secBill))
                         
-                    }
+                        {
+                            double dx = secBill.X - newX;
+                            double dy = secBill.Y - newY;
+                            double distance = Math.Sqrt(dx * dx + dy * dy);
+                            double angle = Math.Atan2(dx, dy);
+
+                            double nx = dx / distance;
+                            double ny = dy / distance;
+
+                            double p = 2 * (bill.Speed * Math.Cos(bill.Angle) * nx + bill.Speed * Math.Sin(bill.Angle) * ny -
+                                        secBill.Speed * Math.Cos(secBill.Angle) * nx - secBill.Speed * Math.Sin(secBill.Angle) * ny)/
+                                        (bill.Weight+secBill.Weight);
+
+                            bill.Speed = bill.Speed - p * secBill.Weight * nx;
+                            bill.Angle = Math.Atan2(bill.Speed * Math.Sin(bill.Angle) - p * secBill.Weight * ny, bill.Speed * Math.Cos(bill.Angle) - p * secBill.Weight * nx);
+
+                            secBill.Speed = secBill.Speed+p*bill.Weight*nx;
+                            secBill.Angle = Math.Atan2(secBill.Speed * Math.Sin(secBill.Angle) + p * bill.Weight * ny, secBill.Speed * Math.Cos(secBill.Angle) + p * bill.Weight * nx);
+
+                            bill.Angle = (bill.Angle + 2 * Math.PI) % (2 * Math.PI);
+                            secBill.Angle = (secBill.Angle + 2 * Math.PI) % (2 * Math.PI);
+
+                            double diff = (distance - bill.Diameter/2 - secBill.Diameter/2)/2;
+                            newX -= diff * nx;
+                            newY -= diff * ny;
+                            secBill.X += diff * nx;
+                            secBill.Y += diff * ny;
+                          
+                        }
+                    
                 }
+                //odbicia od scian
+                // Sprawdzenie czy kulka uderzyła w ścianę górną, dolną lub boczną
+                if (newX < 0 || newX > _width - diameter || newY < 0 || newY > _length - diameter)
+                {
+                    // Odbicie kulki od ściany
+                    double angle = bill.Angle;
+
+                    // Odbicie od bocznych ścian
+                    if (newX < 0 || newX > _width - diameter)
+                    {
+                        angle = Math.PI - angle; // Odbicie kąta
+
+                    }
+                    else
+                    {
+                        angle = -angle; // Odbicie od górnej lub dolnej ściany
+                    }
+
+                    bill.Angle = angle;
+                    newX = bill.X + bill.Speed * Math.Cos(bill.Angle);
+                    newY = bill.Y + bill.Speed * Math.Sin(bill.Angle);
+
+                }
+
+                // Aktualizacja pozycji kulki
+                bill.X = newX;
+                bill.Y = newY;
+
             }
+           
         }
 
         public void ClearBoard()
         {
+            foreach (IBill bill in _board.getRepository())
+            {
+               bill.IsMoving = false;
+                bill.OnChange -= UpdatePosition;
+            }
             _board.getRepository().Clear();
         }
 
@@ -161,7 +187,7 @@ namespace Logic
         public int GetLength() => _board.Length;
 
         public int GetWidth() => _board.Width;
-        public List<Bill> GetBillList() => _board.getRepository();
+        public List<IBill> GetBillList() => _board.getRepository();
         
     }
 }
