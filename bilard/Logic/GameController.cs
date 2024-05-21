@@ -1,5 +1,6 @@
 ﻿using Data;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Reflection.Metadata;
 using System.Threading;
@@ -66,7 +67,7 @@ namespace Logic
                     flag = false;
                     foreach (Bill secBill in _board.getRepository())
                     {
-                        if (IsColliding(x, y, diameter, secBill))
+                        if (IsColliding(bill.X, bill.Y, diameter, secBill))
                         {
                             flag = true;
                             bill.X = rand.Next(0, width - diameter);
@@ -76,6 +77,7 @@ namespace Logic
                         }
 
                     }
+                    
 
                 } while (flag);
               
@@ -106,6 +108,7 @@ namespace Logic
             double dx = x - bill2.X;
             double dy = y - bill2.Y;
             double distance = Math.Sqrt(dx * dx + dy * dy);
+            
             return distance <= ((d / 2) + (bill2.Diameter / 2));
         }
 
