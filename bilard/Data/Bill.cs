@@ -49,8 +49,12 @@ namespace Data
         }
         public double Weight
         {
-            get => _weight; 
-            set => _weight = value;
+            get => _weight;
+            set
+            {
+                if (value < 0) throw new InvalidDataException();
+                this._weight = value;
+            }
         }
         
         public double Diameter
@@ -58,6 +62,7 @@ namespace Data
             get => this._diameter;
             set 
             {
+                if (value < 0) throw new InvalidDataException();
                 this._diameter = value;
             } 
 

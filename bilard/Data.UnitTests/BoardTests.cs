@@ -29,7 +29,7 @@ namespace Data.UnitTests
         public void BillsManipulationTest()
         {
             Board board = new Board(300, 500);
-            Bill bill = new Bill(1, 5, 15, 32, 60, 1);
+            Bill bill = new Bill(1, 5, 15, 32, 60, 1, 2);
 
             board.addBill(bill);
             Assert.That(board.getSize() == 1);
