@@ -39,7 +39,7 @@ namespace ViewModel
         private bool _isAddEnable;
         private bool _isDeleteEnable;
         private bool _isClearEnable;
-        private bool _isStarted = false;
+   
         
 
         public GUIController()
@@ -58,14 +58,18 @@ namespace ViewModel
 
         public void Update()
         {
+            OnPropertyChanged("GetSize");
             OnPropertyChanged("Bills");
+
         }
 
         public void Add()
         {
-            IsDeleteEnable = true;
-            IsClearEnable = true;
             _GameModel.AddBill();
+            IsDeleteEnable = _GameModel.GetSize()>0;
+            IsClearEnable = _GameModel.GetSize() > 0;
+            OnPropertyChanged("Bills");
+            OnPropertyChanged("GetSize");
         }
 
         public void Delete()
@@ -83,10 +87,11 @@ namespace ViewModel
             }
             else
             {
-        
                 return;
             }
-            OnPropertyChanged("Bills");
+                OnPropertyChanged("Bills");
+            OnPropertyChanged("GetSize");
+            
         }
 
         public void ClearAll()
@@ -99,11 +104,12 @@ namespace ViewModel
             }
             else
             {
-                
                 return;
             };
             
-            OnPropertyChanged("Bills");
+                OnPropertyChanged("Bills");
+            OnPropertyChanged("GetSize");
+
         }
 
         public IBill[]? Bills
@@ -121,6 +127,11 @@ namespace ViewModel
             get => _GameModel.GetWidth();
         }
 
+        public int GetSize
+        {
+            get => _GameModel.GetSize();
+        }
+
         public bool IsAddEnable
         {
             get => _isAddEnable;
@@ -128,6 +139,7 @@ namespace ViewModel
                 _isAddEnable = value;
                 OnPropertyChanged();
             } 
+
 
         }
         public bool IsDeleteEnable

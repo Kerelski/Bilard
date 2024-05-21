@@ -10,22 +10,23 @@ namespace Data
         private double _diameter;
         private double _x;
         private double _y;
-        private double _speed;
-        private double _angle; //od 0 do 6.28 (2*pi)
+        private double _speedX;
+        private double _speedY;
+       
         private int[] _color;
         public event NotifyDelegateBill.NotifyBill? OnChange;
         private bool _isMoving = true;
 
-        public Bill(int id, double weight, int diameter, double x, double y, double angle, double speed)
+        public Bill(int id, double weight, int diameter, double x, double y, double speedX, double speedY)
         {
             this._id = id;
             this._diameter = diameter;
             this._weight = weight;
             this._x = x; 
             this._y = y;
-            this._angle = angle;
             this._color = new int[3];
-            this._speed = speed;
+            this._speedX = speedX;
+            this._speedY = speedY;
             var rand = new Random();
             for (int i = 0; i < 3; i++)
             {
@@ -57,18 +58,21 @@ namespace Data
             get => this._diameter;
             set 
             {
-                if (value < 0) throw new InvalidDataException();
                 this._diameter = value;
             } 
 
         }
 
-        public double Speed
+        public double SpeedX
         {
-            get => _speed;
-            set => _speed = value;
+            get => _speedX;
+            set => _speedX = value;
         }
-        
+        public double SpeedY
+        {
+            get=> _speedY;
+            set => _speedY = value;
+        }
         public double X
         {
             get => (double)_x;
@@ -82,11 +86,7 @@ namespace Data
             set => _y = value;
         }
         
-        public double Angle
-        {
-            get => _angle;
-            set => _angle = value;
-        }
+   
 
         public bool IsMoving
         {

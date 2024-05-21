@@ -7,10 +7,9 @@
         double Weight { get; set; }
         double Diameter { get; set; }
         double X { get; set; }
-        double Y { get; set; }
-        double Angle { get; set; }
-        double Speed { get; set; }
-
+        double Y { get; set; }   
+        double SpeedX { get; set; }
+        double SpeedY { get; set; }
         bool IsMoving { get; set; }
 
         event NotifyDelegateBill.NotifyBill? OnChange;
