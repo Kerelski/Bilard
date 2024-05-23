@@ -1,5 +1,6 @@
 ﻿using Data;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace Logic
 {
-    internal interface IGameController
+    public interface IGameController
     {
+        public event NotifyDelegateGameController.NotifyBillController? OnChange;
         void CreateBill();
         void DeleteBill(int id);
         void UpdatePosition(IBill bill);
@@ -16,6 +18,6 @@ namespace Logic
         int GetSize();
         int GetLength();
         int GetWidth();
-        List<IBill> GetBillList();
+        ConcurrentBag<IBill> GetBillRepo();
     }
 }

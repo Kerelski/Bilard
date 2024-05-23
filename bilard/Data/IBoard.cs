@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Data
 {
@@ -6,10 +7,12 @@ namespace Data
     {
         int Length { get; set; }
         int Width { get; set; }
-        List<IBill> getRepository();
+        ConcurrentBag<IBill> getRepository();
         void addBill(IBill bill);
         void removeBill(IBill bill);
         int getSize();
-        void setRepository(List<IBill> repository);
+        void setRepository(ConcurrentBag<IBill> repository);
+
+        public object Lock { get; }
     }
 }

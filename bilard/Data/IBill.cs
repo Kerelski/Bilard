@@ -14,5 +14,6 @@
 
         event NotifyDelegateBill.NotifyBill? OnChange;
         void MoveAsync(Barrier barrier);
+        public object Lock { get; }
     }
 }

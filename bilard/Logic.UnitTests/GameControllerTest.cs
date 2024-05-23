@@ -11,10 +11,10 @@ namespace Logic.UnitTests
             GameController gameController = new GameController(200, 200);
             gameController.CreateBill();
             Assert.That(gameController.GetSize() == 1);
-            Assert.That(gameController.GetBillList()[0].Y >= 0);
-            Assert.That(gameController.GetBillList()[0].X >= 0);
-            Assert.That(gameController.GetBillList()[0].Y < gameController.GetLength());
-            Assert.That(gameController.GetBillList()[0].X < gameController.GetWidth());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y < gameController.GetLength());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X < gameController.GetWidth());
 
             gameController.DeleteBill(0);
             Assert.That(gameController.GetSize() == 0);
@@ -26,16 +26,16 @@ namespace Logic.UnitTests
         {
             GameController gameController = new GameController(200, 200);
             gameController.CreateBill();
-            Assert.That(gameController.GetBillList()[0].Y >= 0);
-            Assert.That(gameController.GetBillList()[0].X >= 0);
-            Assert.That(gameController.GetBillList()[0].Y < gameController.GetLength());
-            Assert.That(gameController.GetBillList()[0].X < gameController.GetWidth());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y < gameController.GetLength());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X < gameController.GetWidth());
 
-            gameController.UpdatePosition(gameController.GetBillList()[0]);
-            Assert.That(gameController.GetBillList()[0].Y >= 0);
-            Assert.That(gameController.GetBillList()[0].X >= 0);
-            Assert.That(gameController.GetBillList()[0].Y < gameController.GetLength());
-            Assert.That(gameController.GetBillList()[0].X < gameController.GetWidth());
+            gameController.UpdatePosition(gameController.GetBillRepo().FirstOrDefault());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X >= 0);
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().Y < gameController.GetLength());
+            Assert.That(gameController.GetBillRepo().FirstOrDefault().X < gameController.GetWidth());
         }
 
         [Test]
@@ -45,11 +45,11 @@ namespace Logic.UnitTests
             for (int i = 0; i < 3; i++)
             {
                 gameController.CreateBill();
-                Assert.That(gameController.GetBillList().Count == i + 1);
-                Assert.That(gameController.GetBillList()[i].Y >= 0);
-                Assert.That(gameController.GetBillList()[i].X >= 0);
-                Assert.That(gameController.GetBillList()[0].Y < gameController.GetLength());
-                Assert.That(gameController.GetBillList()[0].X < gameController.GetWidth());
+                Assert.That(gameController.GetBillRepo().Count == i+1);
+                Assert.That(gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == i).Y >= 0);
+                Assert.That(gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == i).X >= 0);
+                Assert.That(gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == i).Y < gameController.GetLength());
+                Assert.That(gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == i).X < gameController.GetWidth());
             }
 
             gameController.ClearBoard();
@@ -73,17 +73,17 @@ namespace Logic.UnitTests
             gameController.CreateBill();
             gameController.CreateBill();
 
-            var bill1 = gameController.GetBillList()[0];
-            var bill2 = gameController.GetBillList()[1];
+            var bill1 = gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == 0);
+            var bill2 = gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == 1);
 
             bill1.X = 50;
             bill1.Y = 50;
-            bill1.SpeedX = 1;
+            bill1.SpeedX = 4;
             bill1.SpeedY = 0;
 
-            bill2.X = 50 + bill1.Diameter/2;
+            bill2.X = 50 + bill1.Diameter/2 + bill2.Diameter/2;
             bill2.Y = 50;
-            bill2.SpeedX = -1;
+            bill2.SpeedX = -4;
             bill2.SpeedY = 0;
 
             
@@ -91,8 +91,8 @@ namespace Logic.UnitTests
             gameController.UpdatePosition(bill2);
 
             
-            Assert.That(bill1.SpeedX != 1);
-            Assert.That(bill2.SpeedX != -1);
+            Assert.That(bill1.SpeedX != 4);
+            Assert.That(bill2.SpeedX != -4);
         }
         [Test]
         public void BillRightWallCollisionTest()
@@ -101,7 +101,7 @@ namespace Logic.UnitTests
 
             gameController.CreateBill();
 
-            var bill = gameController.GetBillList()[0];
+            var bill = gameController.GetBillRepo().FirstOrDefault();
 
             bill.X = gameController.GetWidth() - bill.Diameter;
             bill.Y = 100;
@@ -120,7 +120,7 @@ namespace Logic.UnitTests
 
             gameController.CreateBill();
 
-            var bill = gameController.GetBillList()[0];
+            var bill = gameController.GetBillRepo().FirstOrDefault();
 
             bill.X = 100;
             bill.Y = 0;

@@ -12,7 +12,7 @@ namespace Data
         private double _y;
         private double _speedX;
         private double _speedY;
-       
+        private readonly object _lock = new object();
         private int[] _color;
         public event NotifyDelegateBill.NotifyBill? OnChange;
         private bool _isMoving = true;
@@ -114,5 +114,7 @@ namespace Data
             }
            barrier.RemoveParticipant();
         }
+
+        public object Lock => _lock;
     }
 }

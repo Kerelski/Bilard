@@ -1,12 +1,13 @@
 
 using Data;
 using Logic;
+using System.Collections.Concurrent;
 
 namespace Model
 {
     public class GameModel
     {
-        private GameController _controller;
+        private IGameController _controller;
 
         public GameModel(int x, int y)
         {
@@ -27,11 +28,11 @@ namespace Model
         {
             _controller.ClearBoard();
         }
-        public GameController GetController {
+        public IGameController GetController {
             get => _controller;
         }
 
-        public List<IBill> GetBills() => _controller.GetBillList();
+        public ConcurrentBag<IBill> GetBills() => _controller.GetBillRepo();
 
         public int GetLength() => _controller.GetLength();
 
