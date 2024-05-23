@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Data;
+using NUnit.Framework;
+using System.Diagnostics;
 
 namespace Logic.UnitTests
 {
@@ -70,43 +72,26 @@ namespace Logic.UnitTests
         {
             GameController gameController = new GameController(200, 200);
 
-            gameController.CreateBill();
-            gameController.CreateBill();
+            gameController.GetBillRepo().Add(new Bill(0, 5, 50, 50, 50, 10, 0));
+            gameController.GetBillRepo().Add(new Bill(1, 5, 50, 105, 50, -10, 0));
 
             var bill1 = gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == 0);
             var bill2 = gameController.GetBillRepo().FirstOrDefault(bill => bill.Id == 1);
 
-            bill1.X = 50;
-            bill1.Y = 50;
-            bill1.SpeedX = 4;
-            bill1.SpeedY = 0;
-
-            bill2.X = 50 + bill1.Diameter/2 + bill2.Diameter/2;
-            bill2.Y = 50;
-            bill2.SpeedX = -4;
-            bill2.SpeedY = 0;
-
-            
             gameController.UpdatePosition(bill1);
             gameController.UpdatePosition(bill2);
 
-            
-            Assert.That(bill1.SpeedX != 4);
-            Assert.That(bill2.SpeedX != -4);
+            Assert.That(bill1.SpeedX != 10, "" + bill1.Diameter+ " " + bill2.Diameter +" "+ bill1.X + " " + bill2.X +" "+ bill1.Y + " " + bill2.Y);
+            Assert.That(bill2.SpeedX != -10);
         }
         [Test]
         public void BillRightWallCollisionTest()
         {
             GameController gameController = new GameController(200, 200);
 
-            gameController.CreateBill();
+            gameController.GetBillRepo().Add(new Bill(0, 5, 50, gameController.GetWidth() - 50, 100, 1, 0));
 
             var bill = gameController.GetBillRepo().FirstOrDefault();
-
-            bill.X = gameController.GetWidth() - bill.Diameter;
-            bill.Y = 100;
-            bill.SpeedX = 1;
-            bill.SpeedY = 0;
 
             gameController.UpdatePosition(bill);
 
@@ -118,14 +103,9 @@ namespace Logic.UnitTests
         {
             GameController gameController = new GameController(200, 200);
 
-            gameController.CreateBill();
+            gameController.GetBillRepo().Add(new Bill(0, 5, 50, 100, 0, 0, -1));
 
             var bill = gameController.GetBillRepo().FirstOrDefault();
-
-            bill.X = 100;
-            bill.Y = 0;
-            bill.SpeedX = 0;
-            bill.SpeedY = -1;
 
             gameController.UpdatePosition(bill);
 
