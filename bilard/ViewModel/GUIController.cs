@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using Model;
 using System.Collections;
 using System.Windows.Controls;
+using Logic;
 
 namespace ViewModel
 {
@@ -47,7 +48,7 @@ namespace ViewModel
             _add = new RelayCommand(Add, ()=>IsAddEnable);
             _delete = new RelayCommand(Delete, ()=>IsDeleteEnable);
             _clear = new RelayCommand(ClearAll, ()=>IsClearEnable);
-           
+
             _GameModel = new GameModel(_length, _width);
             _isAddEnable = true;
             _isDeleteEnable = false;

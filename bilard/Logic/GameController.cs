@@ -1,4 +1,5 @@
 ﻿using Data;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -17,13 +18,15 @@ namespace Logic
         private double _length;
         Barrier barrier;
        
+       
 
         public GameController(int x, int y)
         {
             this._board = new Board(x, y);
             this._length = x;
             this._width = y;
-          
+           
+
             barrier = new Barrier(0, (b) =>
             {     
                 OnChange?.Invoke();
@@ -129,10 +132,13 @@ namespace Logic
                     {
                         if (bill.Id == secBill.Id) continue;
                         if (IsColliding(newX, newY, bill.Diameter, secBill))
-                           if(Monitor.TryEnter(secBill.Lock)) 
+
+                            if(Monitor.TryEnter(secBill.Lock)) 
                            {
+                                
                                 try
                                 {
+                                    DiagnosticLogger.Log($"Kolizja między kulami {bill.Id}({bill.X}, {bill.Y}, {bill.Diameter}) oraz {secBill.Id}({secBill.X}, {secBill.Y}, {secBill.Diameter})");
                                     double dx = newX - secBill.X;
                                     double dy = newY - secBill.Y;
                                     double distance = Math.Sqrt((dx * dx) + (dy * dy));
