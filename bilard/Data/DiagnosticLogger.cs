@@ -48,7 +48,8 @@ namespace Logic
                 {
                     using (StreamWriter file = File.AppendText(_path))
                     {
-                        file.WriteLine($"{{\"message\": \"{log}\"}}");
+                        string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // Format daty i czasu
+                        file.WriteLine($"{{\"{currentTime}\" \"message\": \"{log}\"}}");
                     }
                 }
                 catch (Exception ex)

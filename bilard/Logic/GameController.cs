@@ -92,6 +92,7 @@ namespace Logic
                     bill.OnChange += UpdatePosition;
                     bill.MoveAsync(barrier);
                     _board.addBill(bill);
+                    DiagnosticLogger.Log($"Ball {bill.Id} created at ({bill.X}, {bill.Y}) with diameter {bill.Diameter}");
                 }
                 
             }
@@ -106,7 +107,7 @@ namespace Logic
                     bill.IsMoving = false;
                     bill.OnChange -= UpdatePosition;
                     _board.removeBill(bill);
-
+                    DiagnosticLogger.Log($"Ball {bill.Id} removed from board");
                 }
 
             }
@@ -138,7 +139,7 @@ namespace Logic
                                 
                                 try
                                 {
-                                    DiagnosticLogger.Log($"Kolizja między kulami {bill.Id}({bill.X}, {bill.Y}, {bill.Diameter}) oraz {secBill.Id}({secBill.X}, {secBill.Y}, {secBill.Diameter})");
+                                    DiagnosticLogger.Log($"Collision between ball {bill.Id}({bill.X}, {bill.Y}, {bill.Diameter}) and ball {secBill.Id}({secBill.X}, {secBill.Y}, {secBill.Diameter})");
                                     double dx = newX - secBill.X;
                                     double dy = newY - secBill.Y;
                                     double distance = Math.Sqrt((dx * dx) + (dy * dy));
@@ -227,7 +228,9 @@ namespace Logic
                     bill.IsMoving = false;
                     bill.OnChange -= UpdatePosition;
                 }
+                int count = _board.getRepository().Count;
                 _board.getRepository().Clear();
+                DiagnosticLogger.Log($"All ({count}) balls removed from board");
             }
             
         }
